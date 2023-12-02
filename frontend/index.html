@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>App de Lista de Desejos</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Wishlist</h1>
+        <div>
+            <h2>Adicionar à Lista de Desejos</h2>
+            <form id="wishlistForm">
+                <label for="userId">ID do Usuário:</label>
+                <input type="text" id="userId" name="userId" required>
+                <label for="productId">ID do Produto:</label>
+                <input type="text" id="productId" name="productId" required>
+                <button type="submit">Adicionar à Lista de Desejos</button>
+            </form>
+        </div>
+        <div>
+            <h2>Ver Lista de Desejos</h2>
+            <label for="viewUserId">ID do Usuário:</label>
+            <input type="text" id="viewUserId" name="viewUserId" required>
+            <button onclick="verListaDesejos()">Ver Lista de Desejos</button>
+            <ul id="wishlistResult"></ul>
+        </div>
+    </div>
+
+    <script>
+        async function verListaDesejos() {
+            const userId = document.getElementById("viewUserId").value;
+            const response = await fetch(`http://localhost:3000/wishlist/${userId}`);
+            const data = await response.json();
+            const wishlistResult = document.getElementById("wishlistResult");
+            wishlistResult.innerHTML = "";
+
+            data.wishlist.forEach(produto => {
+                const li = document.createElement("li");
+                li.textContent = produto;
+                wishlistResult.appendChild(li);
+            });
+        }
+
+        document.getElementById("wishlistForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const userId = document.getElementById("userId").value;
+            const productId = document.getElementById("productId").value;
+
+            const response = await fetch('http://localhost:3000/wishlist/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId, productId }),
+            });
+
+            const data = await response.json();
+            alert(data.message);
+        });
+    </script>
+</body>
+</html>
